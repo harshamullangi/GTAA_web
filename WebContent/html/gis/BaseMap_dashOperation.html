@@ -1,0 +1,1033 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link
+	href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
+	rel="stylesheet" />
+<link rel="stylesheet"
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<style>
+#baseMap {
+	height: 350px;
+	width: 100%
+}
+
+#searchLocation {
+	width: 250px;
+	top: 8px !important;
+}
+
+#floating-panel {
+	position: absolute;
+	/* left: 58%; */
+	left: 53%;
+	z-index: 5;
+	background: rgb(242, 242, 242);
+	font-family: Roboto, Arial, sans-serif;
+	color: rgb(68, 68, 68);
+	font-size: 10px;
+	bottom: 0px;
+	font-weight:bold;
+}
+
+#tdCursor {
+	width: 170px;
+}
+
+#searchLocation {
+	z-index: 12;
+	position: absolute;
+	left: 112px;
+	top: 11px;
+	padding: 5px;
+	width: 290px;
+	font-size: small;
+	padding-left: 46px;
+	height: 31px;
+}
+
+i.fa.fa-home {
+	font-size: 20px;
+	padding: 2px;
+	color: rgb(75, 94, 208);
+}
+
+button.marker_icon {
+	z-index: 23;
+	top: 9px;
+	position: relative;
+	left: 114px;
+	padding-bottom: 2px;
+	height: 29px;
+	border: 1px solid #fff;
+	background-color: white;
+}
+
+#search {
+	float: left;
+	position: absolute;
+}
+.no-padding{
+	padding:0 !important;
+}
+
+.gm-style-iw {
+	/* width: 350px !important; */
+	/* left: 0px !important; */
+	/* background-color: rgba(225, 75, 62, 0.73);
+	box-shadow: 0 1px 6px rgba(178, 178, 178, 0.6);
+	border: 1px solid rgba(22, 70, 93, 0.72);
+	border-radius: 5px 5px 5px 5px;
+	top: 41px !important;
+	position: absolute;
+	left: -85px;
+	width: 128px; */
+	z-index: 1;
+}
+
+#iw-container {
+	margin-bottom: 10px;
+}
+
+#iw-container .iw-title {
+	font-family: 'Open Sans Condensed', sans-serif;
+	font-size: 22px;
+	font-weight: 400;
+	padding: 10px;
+	background-color: #48b5e9;
+	color: white;
+	margin: 0;
+	border-radius: 2px 2px 0 0;
+}
+
+#iw-container .iw-content {
+	font-size: 13px;
+	line-height: 18px;
+	font-weight: 400;
+	margin-right: 1px;
+	padding: 15px 5px 20px 15px;
+	max-height: 140px;
+	overflow-y: auto;
+	overflow-x: hidden;
+}
+
+.iw-content img {
+	float: right;
+	margin: 0 5px 5px 10px;
+}
+
+.iw-subTitle {
+	font-size: 16px;
+	font-weight: 700;
+	padding: 5px 0;
+}
+</style>
+</head>
+<body>
+	<div class="container-fluid">
+		<div class="row">
+			<div class="col-sm-12 map_grid padding-0 no-padding lax_map_lay_of">
+
+		<!-- 		<div id="search">
+					<button class="marker_icon"
+						onclick="defaultCenter(centerLocation);">
+						<i class="fa fa-home"></i>
+					</button>
+
+
+					<input id="searchLocation" class="controls form-control"
+						type="text" placeholder="Search Location">
+
+				</div> -->
+				<div id="floating-panel">
+					<div id="tdCursor"></div>
+				</div>
+
+				<div id="baseMap"></div>
+
+			</div>
+		</div>
+	</div>
+	<script
+		src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.4/jquery.js"></script>
+	<script
+		src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+	<script
+		src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	<script src="http://code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+	<script>
+		var Main_url = '';
+		
+		var shuttleMarkers=[];
+		var tractorMarkers=[];
+		var waterServiceMarkers=[];
+		var shuttleMarker='';
+		var tractorMarker='';
+		var waterServiceMarker='';
+
+		var timeIntervalRefresh = '';
+
+	/* 	jQuery.get('url.txt', function(data) {
+			var json_data = jQuery.parseJSON(data);
+			$.each(json_data, function(key, value) {
+				Main_url = value.url;
+				//console.info(Main_url+"--create geofence");
+				getData();
+				getDataDetails();
+				 callVehicle();
+
+			})
+		}) */
+		console.info('ssss');
+		$.get('../../url.txt', function(data) {
+			url = data;
+			console.info('hi'+url);
+			getPoints(url);
+			displayRoutes();
+			displaygeofence();
+		}, 'text');
+
+		jQuery.get('../../config/timeInterval.txt', function(data) {
+			var json_data = jQuery.parseJSON(data);
+			$.each(json_data, function(key, value) {
+				timeIntervalRefresh = value.timeInterval;
+				//refreshPage();
+
+			})
+		})
+		var map;
+		var controllerMarker = '';
+		var controllerMarkers = [];
+		var markers = [];
+		 
+	      var infoWindow;
+
+		var centerLocation = {
+			lat : 43.6784801,
+			lng : -79.6118817
+		};
+		function initMap() {
+
+			map = new google.maps.Map(document.getElementById('baseMap'), {
+				zoom : 15,
+				center : new google.maps.LatLng(43.6784801,-79.6118817),
+				mapTypeId :'satellite',
+				zoomControl : true,
+				disableDefaultUI : true,
+				zoomControlOptions : {
+					position : google.maps.ControlPosition.RIGHT_BOTTOM
+				},
+				scaleControl : true,
+				fullscreenControl : true,
+				fullscreenControlOptions : {
+					position : google.maps.ControlPosition.RIGHT_TOP
+				},
+				overviewMapControlOptions : {
+					opened : true,
+					position : google.maps.ControlPosition.BOTTOM_LEFT
+				},
+				 styles: [
+				            {elementType: 'geometry', stylers: [{color: '#061E40'}]},
+				            {elementType: 'labels.text.stroke', stylers: [{color: '#061E40'}]},
+				            {elementType: 'labels.text.fill', stylers: [{color: '#746855'}]},
+				            {
+				              featureType: 'administrative.locality',
+				              elementType: 'labels.text.fill',
+				              stylers: [{color: '#d59563'}]
+				            },
+				            {
+				              featureType: 'poi',
+				              elementType: 'labels.text.fill',
+				              stylers: [{color: '#d59563'}]
+				            },
+				            {
+				              featureType: 'poi.park',
+				              elementType: 'geometry',
+				              stylers: [{color: '#061E40'}]
+				            },
+				            {
+				              featureType: 'poi.park',
+				              elementType: 'labels.text.fill',
+				              stylers: [{color: '#6b9a76'}]
+				            },
+				            {
+				              featureType: 'road',
+				              elementType: 'geometry',
+				              stylers: [{color: '#38414e'}]
+				            },
+				            {
+				              featureType: 'road',
+				              elementType: 'geometry.stroke',
+				              stylers: [{color: '#061E40'}]
+				            },
+				            {
+				              featureType: 'road',
+				              elementType: 'labels.text.fill',
+				              stylers: [{color: '#9ca5b3'}]
+				            },
+				            {
+				              featureType: 'road.highway',
+				              elementType: 'geometry',
+				              stylers: [{color: '#746855'}]
+				            },
+				            {
+				              featureType: 'road.highway',
+				              elementType: 'geometry.stroke',
+				              stylers: [{color: '#1f2835'}]
+				            },
+				            {
+				              featureType: 'road.highway',
+				              elementType: 'labels.text.fill',
+				              stylers: [{color: '#f3d19c'}]
+				            },
+				            {
+				              featureType: 'transit',
+				              elementType: 'geometry',
+				              stylers: [{color: '#061E40'}]
+				            },
+				            {
+				              featureType: 'transit.station',
+				              elementType: 'labels.text.fill',
+				              stylers: [{color: '#d59563'}]
+				            },
+				            {
+				              featureType: 'water',
+				              elementType: 'geometry',
+				              stylers: [{color: '#17263c'}]
+				            },
+				            {
+				              featureType: 'water',
+				              elementType: 'labels.text.fill',
+				              stylers: [{color: '#515c6d'}]
+				            },
+				            {
+				              featureType: 'water',
+				              elementType: 'labels.text.stroke',
+				              stylers: [{color: '#17263c'}]
+				            }
+				          ]
+
+			});
+
+			/*Lat long display    */
+
+			google.maps.event.addListener(map, 'mousemove', function(event) {
+				displayCoordinates(event.latLng);
+				//console.log("map get center--"+map.getCenter());
+			});
+
+			function displayCoordinates(pnt) {
+				var coordsLabel = document.getElementById("tdCursor");
+				var lat = pnt.lat();
+				lat = lat.toFixed(4);
+				var lng = pnt.lng();
+				lng = lng.toFixed(4);
+				coordsLabel.innerHTML = "Latitude: " + lat + "  Longitude: "
+						+ lng;
+			}
+
+			//for place search
+			var input = document.getElementById('searchLocation');
+			var searchBox = new google.maps.places.SearchBox(input);
+			map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
+
+			map.addListener('bounds_changed', function() {
+				searchBox.setBounds(map.getBounds());
+			});
+
+			// Listen for the event fired when the user selects a prediction and retrieve
+			// more details for that place.
+			searchBox.addListener('places_changed', function() {
+				var places = searchBox.getPlaces();
+				if (places.length == 0) {
+					return;
+				}
+
+				// Clear out the old markers.
+				markers.forEach(function(marker) {
+					marker.setMap(null);
+				});
+				markers = [];
+
+				// For each place, get the icon, name and location.
+				var bounds = new google.maps.LatLngBounds();
+				places.forEach(function(place) {
+					if (!place.geometry) {
+						//  console.log("Returned place contains no geometry");
+						return;
+					}
+					var icon = {
+						url : place.icon,
+						size : new google.maps.Size(71, 71),
+						origin : new google.maps.Point(0, 0),
+						anchor : new google.maps.Point(17, 34),
+						scaledSize : new google.maps.Size(25, 25)
+					};
+
+					// Create a marker for each place.
+					markers.push(new google.maps.Marker({
+						map : map,
+						icon : icon,
+						title : place.name,
+						position : place.geometry.location
+					}));
+
+					if (place.geometry.viewport) {
+						// Only geocodes have viewport.
+						bounds.union(place.geometry.viewport);
+					} else {
+						bounds.extend(place.geometry.location);
+					}
+				});
+				map.fitBounds(bounds);
+			});
+
+			/*Nazia Added     */
+
+			var lineSymbol = {
+				path : 'M 0,-1 0,1',
+				strokeOpacity : 1,
+				scale : 3
+			};
+
+		}
+		
+		function getPoints(url){
+			$.ajax({
+				method : 'GET',
+				url : url + 'gtaa_eta/dashboard_bus_trak_details',
+				success : function(response) { 
+					//console.info(response.Message);
+					PointsPosition();
+					//displayRoutes();
+					checkLiveVehicle(response.Message);
+					//dispMainController(,data);
+					
+				},
+				error : function() { /* alert('Failed!'); */
+				}
+			
+			});
+			setInterval(function() {
+			$.ajax({
+				method : 'GET',
+				url : url + 'gtaa_eta/dashboard_bus_trak_details',
+				success : function(response) { 
+					//console.info(response.Message);
+					PointsPosition();
+					//displayRoutes();
+					checkLiveVehicle(response.Message);
+					//dispMainController(,data);
+					
+				},
+				error : function() { /* alert('Failed!'); */
+				}
+			
+			});
+			}, 10000);
+		}
+		
+		function displayRoutes(){
+			$.ajax({
+				method : 'GET',
+				url : url + 'gtaa_eta/dashboard_route_details',
+				success : function(response) { 
+					console.info(response);
+					
+					$.each(response.Message,function(key,val){
+						var bookorders=[];
+						//console.info(val.latlong);
+						$.each(val.latlong,function(key,value){
+							
+							var lat= value.split(',')[0];
+							var longa= value.split(',')[1];
+							
+							var temp=new Object();
+							temp['lat']=parseFloat(lat);
+							temp['lng']=parseFloat(longa);
+							bookorders.push(temp);
+						});
+						if(val.route_name == 'Route1'){
+							var color = '#ff0000';
+						}else if(val.route_name == 'Route2'){
+							var color = '#8BC34A';
+						}else if(val.route_name == 'Route3'){
+							var color = '#111';
+						}
+						var bermudaTriangle = new google.maps.Polygon({
+						    paths: bookorders,
+						    strokeColor: color,
+						    strokeOpacity: 0.8,
+						    strokeWeight: 2,
+						    fillColor: color,
+						    fillOpacity: 0.35,
+						   label:({
+							   text:'ssss',
+						   })
+						  });
+						  bermudaTriangle.setMap(map);
+						  infoWindow = new google.maps.InfoWindow;
+						  if(val.route_name == 'Route1'){
+							  bermudaTriangle.addListener('click', showArraysRoute1);
+							}else if(val.route_name == 'Route2'){
+								 bermudaTriangle.addListener('click', showArraysRoute2);
+							}else if(val.route_name == 'Route3'){
+								 bermudaTriangle.addListener('click', showArraysRoute3);
+							}
+						 
+						  
+					});
+				},
+				error : function() { /* alert('Failed!'); */
+				}
+			
+			});
+		}
+		
+		function displaygeofence(){
+			$.ajax({
+				method : 'GET',
+				url : url + 'gtaa_eta/dashboard_geofence_details',
+				success : function(response) { 
+					console.info(response);
+					
+					$.each(response.Message,function(key,val){
+						var bookorders=[];
+						//console.info(val.latlong);
+						$.each(val.latlong,function(key,value){
+							
+							var lat= value.split(',')[0];
+							var longa= value.split(',')[1];
+							
+							var temp=new Object();
+							temp['lat']=parseFloat(lat);
+							temp['lng']=parseFloat(longa);
+							bookorders.push(temp);
+						});
+						
+						var color = '#ff0000';
+						var bermudaTriangle = new google.maps.Polygon({
+						    paths: bookorders,
+						    strokeColor: color,
+						    strokeOpacity: 0.8,
+						    strokeWeight: 2,
+						    fillColor: color,
+						    fillOpacity: 0.35,
+						   label:({
+							   text:'ssss',
+						   })
+						  });
+						  bermudaTriangle.setMap(map);
+						  infoWindow = new google.maps.InfoWindow;
+						 /*  if(val.route_name == 'Route1'){
+							  bermudaTriangle.addListener('click', showArraysRoute1);
+							}else if(val.route_name == 'Route2'){
+								 bermudaTriangle.addListener('click', showArraysRoute2);
+							}else if(val.route_name == 'Route3'){
+								 bermudaTriangle.addListener('click', showArraysRoute3);
+							} */
+						 
+						  
+					});
+				},
+				error : function() { /* alert('Failed!'); */
+				}
+			
+			});
+		}
+		
+		function showArraysRoute1(event){
+		
+			infoWindow.setContent('Route1');
+			infoWindow.setPosition(event.latLng);
+			infoWindow.open(map);
+		}
+		
+		function showArraysRoute2(event){
+			
+			infoWindow.setContent('Route2');
+			infoWindow.setPosition(event.latLng);
+			infoWindow.open(map);
+		}
+		
+		function showArraysRoute3(event){
+			
+			infoWindow.setContent('Route3');
+			infoWindow.setPosition(event.latLng);
+			infoWindow.open(map);
+		}
+		
+		
+		function PointsPosition() {
+			clearControllerIcon();
+			
+			//for (var i = 0; i < response.length; i++) {
+				//console.info(response[i].latitude);
+				/* var lat = response[i].latitude;
+				var lng = response[i].longitude; */
+				var position1 = new google.maps.LatLng(43.6801, -79.6122);
+				controllerMarker = new google.maps.Marker({
+					position : position1,
+					map : map,
+					icon : 'img/Asset154mdpi.png',
+					title : 'International BusBay'
+				//title : response[i].vehicleNo
+				});
+				
+				var position2 = new google.maps.LatLng(43.68158, -79.61511);
+				controllerMarker = new google.maps.Marker({
+					position : position2,
+					map : map,
+					icon : 'img/Asset153.png',
+					title : 'Domestic BusBay'
+				//title : response[i].vehicleNo
+				});
+				//controllerMarkers.push(controllerMarker);
+			//}
+
+		}
+		
+		function dispMainController(response,data_exp) {
+			
+			clearControllerIcon();
+			
+			for (var i = 0; i < response.length; i++) {
+				//if(data_exp[response[i].vehicle_name] == 'Halt'){
+				if((data_exp[response[i].vehicle_name] == 'Halt') || (data_exp[response[i].vehicle_name] == 'Stoppage')){
+					var img='img/buses3.png';
+				}
+				else if((data_exp[response[i].vehicle_name] == 'Geofence violation')){
+					var img='img/BlueBus.png';
+				}
+				else{
+					var img='img/Asset_69.png';
+				}
+				var lat = response[i].latitude;
+				var lng = response[i].longitude;
+				var position = new google.maps.LatLng(lat, lng);
+				controllerMarker = new google.maps.Marker({
+					position : position,
+					map : map,
+					icon : img,
+					title : response[i].vehicle_name
+				//title : response[i].vehicleNo
+				});
+				controllerMarkers.push(controllerMarker);
+			}
+
+		}
+		
+		
+		function checkLiveVehicle(response1){
+			
+			var new_array=[];
+			$.ajax({
+				url:url+'gtaa_eta/operation_ETA_details',
+				method:'GET',
+				success : function(response) { 
+					$.each(response.Message,function(key,value){
+						new_array[value.bus_details]=value.status;
+					});
+					dispMainController(response1,new_array);
+				}, 
+			});
+			
+			
+			//return new_array;
+		}
+		function getData() {
+			$.ajax({
+				method : 'GET',
+				url : Main_url + 'Dubai/getControllerList',
+				success : function(response) { //console.info(response);
+					dispController(response);
+				},
+				error : function() { /* alert('Failed!'); */
+				}
+			//beforeSend: setHeader
+			});
+		}
+
+		function dispController(response) {
+			clearControllerIcon();
+			for (var i = 0; i < response.length; i++) {
+				var lat = response[i].latitude;
+				var lng = response[i].longitude;
+				var position = new google.maps.LatLng(lat, lng);
+				controllerMarker = new google.maps.Marker({
+					position : position,
+					map : map,
+					//icon : vehIcon,
+					title : response[i].name
+				//title : response[i].vehicleNo
+				});
+				controllerMarkers.push(controllerMarker);
+			}
+
+		}
+
+		function clearControllerIcon() {
+			for (var k = 0; k < controllerMarkers.length; k++) {
+				//console.log("parking area hide");
+				controllerMarkers[k].setMap(null);
+			}
+		}
+		function refreshPage() {
+			/* 10 seconds interval */
+			setInterval(function() {
+				//console.info("time interval--" + timeIntervalRefresh);
+				getData();
+				getDataDetails();
+			}, timeIntervalRefresh);
+		}
+
+		$('#searchLocation').change(function() {
+			if ($('#searchLocation').val() == '') {
+				defaultCenter();
+			}
+			//console.log("input change--"+document.getElementById('searchLocation').value);
+		})
+
+		function defaultCenter() {
+			//console.info("function called");
+			map.setCenter(centerLocation);
+			map.setZoom(12);
+			document.getElementById('searchLocation').value = "";
+
+			// Clear out the old markers.
+			markers.forEach(function(marker) {
+				marker.setMap(null);
+			});
+			markers = [];
+		}
+
+		function dispVeh(response) {
+			var infowindow = new google.maps.InfoWindow();
+			//clearVehIcon();
+			for (var i = 0; i < response.length; i++) {
+				if(response[i].vehicle_type=='Water service unit'){
+					vehIcon = "img/Delay_bus_out_ON_.png";
+				}
+				else if(response[i].vehicle_type=='Shuttle Bus'){
+					vehIcon = "img/Delay_bus_out_ON_.png";
+				}
+				else{
+					vehIcon = "img/Delay_bus_out_ON_.png";
+				}
+				var lat = response[i].latitude;
+				//console.log(lat);
+				var lng = response[i].longitude;
+				var position = new google.maps.LatLng(lat, lng);
+				console.log("position--" + position);
+				
+				if(response[i].vehicle_type=='Water service unit'){
+					waterServiceMarker=new google.maps.Marker({
+						position : position,
+						map : map,
+					icon : vehIcon,
+					//title : response[i].vehicle_num
+					//title : response[i].vehicleNo
+					});
+					var data = '<html><body><h4 align="center">'
+						+ response[i].vehicle_num + '</h4></br><b>Speed : </b> <em><strong>'
+						+ response[i].speed + '</em></strong></br><b>Location : </b> <em><strong>'
+						+ response[i].location + '</em></strong></br><b>Geofence : </b><em><strong>'
+						+ response[i].geofence + '</em></strong></br><b>GPS Time : </b><em><strong> '
+						+ response[i].gps_time + '</em></strong></body></html>';
+						
+						(function(waterServiceMarker, data) {
+							google.maps.event.addListener(waterServiceMarker, 'mouseover',
+									function(e) {
+										infowindow.setContent(data);
+										infowindow.open(map, waterServiceMarker);
+										var iwOuter = $('.gm-style-iw');
+
+						    			/* Since this div is in a position prior to .gm-div style-iw.
+						    			 * We use jQuery and create a iwBackground variable,
+						    			 * and took advantage of the existing reference .gm-style-iw for the previous div with .prev().
+						    			 */
+						    			var iwBackground = iwOuter.prev();
+						    			//console.info(iwBackground.attr('class'));
+						    			// Removes background shadow DIV
+						    			iwBackground.children(':nth-child(2)').css({
+						    				'display' : 'none'
+						    			});
+
+						    			// Removes white background DIV
+						    			iwBackground.children(':nth-child(4)').css({
+						    				'display' : 'none'
+						    			});
+
+						    			// Moves the infowindow 115px to the right.
+						    			iwOuter.parent().parent().css({
+						    				left : '1px'
+						    			});
+
+						    			// Moves the shadow of the arrow 76px to the left margin.
+						    			iwBackground.children(':nth-child(1)').attr('style',
+						    					function(i, s) {
+						    						return s + 'left: 76px !important;'
+						    					});
+						    			var xyz = iwBackground.children(':nth-child(3)').find(
+						    					'div').children().parent();
+						    			var zbc = xyz.closest('div').parent().css('display',
+						    					'none');
+						    			var abc = zbc.parent().css('display', 'none');
+
+						    			//abc.parent().css('top','20px');
+
+						    			// iwBackground.children(':nth-child(3)').find('div').children().parent().closest('div').css('background','red');
+
+						    			// Reference to the div that groups the close button elements.
+						    			var iwCloseBtn = iwOuter.next();
+
+						    			// Apply the desired effect to the close button
+						    			iwCloseBtn.css({
+						    				opacity : '1',
+						    				right : '25px',
+						    				top : '54px',
+						    				'border-radius' : '13px',
+						    				'box-shadow' : '0 0 5px #3990B9'
+						    			});
+
+						    			// If the content of infowindow not exceed the set maximum height, then the gradient is removed.
+						    			if ($('.iw-content').height() < 140) {
+						    				$('.iw-bottom-gradient').css({
+						    					display : 'none'
+						    				});
+						    			}
+
+						    			// The API automatically applies 0.7 opacity to the button after the mouseout event. This function reverses this event to the desired value.
+						    			iwCloseBtn.mouseout(function() {
+						    				$(this).css({
+						    					opacity : '1'
+						    				});
+						    			});
+									});
+							google.maps.event.addListener(waterServiceMarker, 'mouseout',
+									function(e) {
+										//infowindow.setContent(null);
+										infowindow.close(map, waterServiceMarker);
+									});
+							
+						
+						})(waterServiceMarker, data);
+
+						waterServiceMarkers.push(waterServiceMarker);
+						
+						
+				}
+				
+				
+				else if(response[i].vehicle_type=='Shuttle Bus'){
+					shuttleMarker=new google.maps.Marker({
+						position : position,
+						map : map,
+					icon : vehIcon,
+					//title : response[i].vehicle_num
+					//title : response[i].vehicleNo
+					});
+					var data = '<html><body><h4 align="center">'
+						+ response[i].vehicle_num + '</h4></br><b>Speed : </b><em><strong>'
+						+ response[i].speed + '</em></strong></br><b>Location : </b><em><strong>'
+						+ response[i].location + '</em></strong></br><b>Passenger Count : </b> <em><strong> '
+						+ response[i].passenger_count + '</em></strong></br><b>Geofence : </b> <em><strong>'
+						+ response[i].geofence + '</em></strong></br><b>GPS Time : </b> <em><strong> '
+						+ response[i].gps_time + '</em></strong></body></html>';
+						
+						(function(shuttleMarker, data) {
+							google.maps.event.addListener(shuttleMarker, 'mouseover',
+									function(e) {
+										infowindow.setContent(data);
+										infowindow.open(map, shuttleMarker);
+										var iwOuter = $('.gm-style-iw');
+
+						    			/* Since this div is in a position prior to .gm-div style-iw.
+						    			 * We use jQuery and create a iwBackground variable,
+						    			 * and took advantage of the existing reference .gm-style-iw for the previous div with .prev().
+						    			 */
+						    			var iwBackground = iwOuter.prev();
+						    			//console.info(iwBackground.attr('class'));
+						    			// Removes background shadow DIV
+						    			iwBackground.children(':nth-child(2)').css({
+						    				'display' : 'none'
+						    			});
+
+						    			// Removes white background DIV
+						    			iwBackground.children(':nth-child(4)').css({
+						    				'display' : 'none'
+						    			});
+
+						    			// Moves the infowindow 115px to the right.
+						    			iwOuter.parent().parent().css({
+						    				left : '1px'
+						    			});
+
+						    			// Moves the shadow of the arrow 76px to the left margin.
+						    			iwBackground.children(':nth-child(1)').attr('style',
+						    					function(i, s) {
+						    						return s + 'left: 76px !important;'
+						    					});
+						    			var xyz = iwBackground.children(':nth-child(3)').find(
+						    					'div').children().parent();
+						    			var zbc = xyz.closest('div').parent().css('display',
+						    					'none');
+						    			var abc = zbc.parent().css('display', 'none');
+
+						    			//abc.parent().css('top','20px');
+
+						    			// iwBackground.children(':nth-child(3)').find('div').children().parent().closest('div').css('background','red');
+
+						    			// Reference to the div that groups the close button elements.
+						    			var iwCloseBtn = iwOuter.next();
+
+						    			// Apply the desired effect to the close button
+						    			iwCloseBtn.css({
+						    				opacity : '1',
+						    				right : '25px',
+						    				top : '54px',
+						    				'border-radius' : '13px',
+						    				'box-shadow' : '0 0 5px #3990B9'
+						    			});
+
+						    			// If the content of infowindow not exceed the set maximum height, then the gradient is removed.
+						    			if ($('.iw-content').height() < 140) {
+						    				$('.iw-bottom-gradient').css({
+						    					display : 'none'
+						    				});
+						    			}
+
+						    			// The API automatically applies 0.7 opacity to the button after the mouseout event. This function reverses this event to the desired value.
+						    			iwCloseBtn.mouseout(function() {
+						    				$(this).css({
+						    					opacity : '1'
+						    				});
+						    			});
+									});
+							google.maps.event.addListener(shuttleMarker, 'mouseout',
+									function(e) {
+										//infowindow.setContent(null);
+										infowindow.close(map, shuttleMarker);
+									});
+							
+						
+						})(shuttleMarker, data);
+
+						shuttleMarkers.push(shuttleMarker);
+						
+						
+				}
+				
+				
+				else if(response[i].vehicle_type=='Tractors'){
+					tractorMarker=new google.maps.Marker({
+						position : position,
+						map : map,
+					icon : vehIcon,
+					//title : response[i].vehicle_num
+					//title : response[i].vehicleNo
+					});
+					var data = '<html><body><h4 align="center">'
+						+ response[i].vehicle_num + '</h4></br><b>Speed : </b> <em><strong>'
+						+ response[i].speed + '</em></strong></br><b>Location : </b> <em><strong>'
+						+ response[i].location + '</em></strong></br><b>Geofence : </b><em><strong>'
+						+ response[i].geofence + '</em></strong></br><b>GPS Time : </b><em><strong> '
+						+ response[i].gps_time + '</em></strong></body></html>';
+						
+						(function(tractorMarker, data) {
+							google.maps.event.addListener(tractorMarker, 'mouseover',
+									function(e) {
+										infowindow.setContent(data);
+										infowindow.open(map, tractorMarker);
+										var iwOuter = $('.gm-style-iw');
+
+						    			/* Since this div is in a position prior to .gm-div style-iw.
+						    			 * We use jQuery and create a iwBackground variable,
+						    			 * and took advantage of the existing reference .gm-style-iw for the previous div with .prev().
+						    			 */
+						    			var iwBackground = iwOuter.prev();
+						    			//console.info(iwBackground.attr('class'));
+						    			// Removes background shadow DIV
+						    			iwBackground.children(':nth-child(2)').css({
+						    				'display' : 'none'
+						    			});
+
+						    			// Removes white background DIV
+						    			iwBackground.children(':nth-child(4)').css({
+						    				'display' : 'none'
+						    			});
+
+						    			// Moves the infowindow 115px to the right.
+						    			iwOuter.parent().parent().css({
+						    				left : '1px'
+						    			});
+
+						    			// Moves the shadow of the arrow 76px to the left margin.
+						    			iwBackground.children(':nth-child(1)').attr('style',
+						    					function(i, s) {
+						    						return s + 'left: 76px !important;'
+						    					});
+						    			var xyz = iwBackground.children(':nth-child(3)').find(
+						    					'div').children().parent();
+						    			var zbc = xyz.closest('div').parent().css('display',
+						    					'none');
+						    			var abc = zbc.parent().css('display', 'none');
+
+						    			//abc.parent().css('top','20px');
+
+						    			// iwBackground.children(':nth-child(3)').find('div').children().parent().closest('div').css('background','red');
+
+						    			// Reference to the div that groups the close button elements.
+						    			var iwCloseBtn = iwOuter.next();
+
+						    			// Apply the desired effect to the close button
+						    			iwCloseBtn.css({
+						    				opacity : '1',
+						    				right : '25px',
+						    				top : '54px',
+						    				'border-radius' : '13px',
+						    				'box-shadow' : '0 0 5px #3990B9'
+						    			});
+
+						    			// If the content of infowindow not exceed the set maximum height, then the gradient is removed.
+						    			if ($('.iw-content').height() < 140) {
+						    				$('.iw-bottom-gradient').css({
+						    					display : 'none'
+						    				});
+						    			}
+
+						    			// The API automatically applies 0.7 opacity to the button after the mouseout event. This function reverses this event to the desired value.
+						    			iwCloseBtn.mouseout(function() {
+						    				$(this).css({
+						    					opacity : '1'
+						    				});
+						    			});
+									});
+							google.maps.event.addListener(tractorMarker, 'mouseout',
+									function(e) {
+										//infowindow.setContent(null);
+										infowindow.close(map, tractorMarker);
+									});
+							
+						
+						})(tractorMarker, data);
+
+						tractorMarkers.push(tractorMarker);
+						
+						
+				}
+				
+				
+				
+			}
+		}
+	</script>
+	<!-- <script src="js/googleapis.js"></script> -->
+	<script
+		src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB3bCV7GD2iGw-juQ-5rS71JMm6HcC4fUM&callback=initMap&libraries=places">
+		
+	</script>
+</body>
+</html>

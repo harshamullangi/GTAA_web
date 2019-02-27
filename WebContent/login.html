@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>GTAA-Transit Bus ETA System</title>
+<link href="assests/css/login.css" rel="stylesheet" type="text/css" />
+
+<link rel="stylesheet"
+	href="assests/css/bootstrap/bootstrap.min.css">
+<link rel="stylesheet"
+	href="assests/css/bootstrap/font-awesome.min.css">
+<script
+	src="assests/js/angular.min.js"></script>
+<script
+	src="assests/js/angular-route.js"></script>
+<script
+	src="assests/js/jquery.min.js"></script>
+<script
+	src="assests/js/bootstrap/bootstrap.min.js"></script>
+	<script src="assests/js/bootbox/bootbox.js"></script>
+</head>
+<body>
+	<div class="login_background">
+	<span class="wipro_logo"><img src="assests/images/wipro_newlogo.png"></span>
+		<div class="login_background_input">
+		
+			<img src="assests/images/gta-logo-1.png" /> <input
+				class=" text-box single-line" data-val="true" data-val-required="*"
+				id="user_name" name="user_name" type="text" placeholder="User Name" onkeyup="validateAddress()"/>
+			<input class=" text-box single-line" data-val="true"
+				data-val-required="*" id="password" name="password" type="password"
+				placeholder="* * * * *" /> <input type="submit" value=""
+				class="btn btn-default login_background_input_submitb" />
+		</div>
+	</div>
+</body>
+</html>
+<script>
+	var url;
+
+	$.get('url.txt', function(data) {
+		url = data;
+	}, 'text');
+
+	$('.login_background_input_submitb').on('click', function() {
+
+		var username = $('#user_name').val();
+		var password = $('#password').val();
+
+		$.ajax({
+			url : url + 'gtaa_eta/check_credentials',
+			method : 'POST',
+			dataType : 'JSON',
+			async : true,
+			headers : {
+				'Accept' : 'application/json',
+				'Content-Type' : 'application/json'
+			},
+			data : JSON.stringify({
+				"user_name" : username,
+				"password" : password,
+			}),
+			success : function(response) {
+				if(response.Message == 'SUCCESS'){
+					localStorage.setItem('login_user',username);
+					localStorage.setItem('gta_Role',response.Role);
+					window.location.href='index.html';
+				}else{
+					bootbox.alert(response.Description);
+					$('#user_name').val('');
+					$('#password').val('');
+				}
+			},
+			error : function(response) {
+
+			}
+		});
+
+	});
+	$(document).keyup(function(){
+	    event.preventDefault();
+	if (event.keyCode === 13) {
+        $('.login_background_input_submitb').trigger('click');
+    }
+	});
+	
+	function close_function(){
+		$('body').removeClass('.modal-open');
+		$('.bootbox').css('display','none');
+		$('.modal-backdrop').css('display','none');
+	};
+	
+	function validateAddress(){
+	     var TCode = document.getElementById('user_name').value;
+
+	     if( /[^a-zA-Z0-9_\-\/]/.test( TCode ) ) {
+	    	 bootbox.alert('No Special Characters Allowed');
+	        $('#user_name').val('');
+	    }
+	}
+	
+</script>

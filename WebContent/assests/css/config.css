@@ -1,0 +1,44 @@
+.gtaa_sub_config .col-md-6:first-child {
+    font-size: 17px;
+    position: relative;
+    /* top: 5px; */
+    text-align: left;
+    display: list-item;
+    float: left;
+    left: 100px;
+}
+
+.gtaa_sub_config {
+    border: 1px solid #b3b3b3;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+#toggle-two {
+    width: 20px;
+    height: 25px;
+}
+
+.gtaa_main_config {
+    float: left;
+    width: 100%;
+    color: black;
+    height: 73vh;
+}
+
+.gtaa_main_config h3{
+    text-align: center;
+    margin: 30px;
+    /* color: black; */
+}
+
+.col-md-12.gtaa_sub_config {
+    padding: 0px 100px;
+}
+
+.gtaa_sub_config .col-md-6:nth-child(2){
+	float: right;
+    width: 20%;
+    right: 20px;
+    position: relative;
+}

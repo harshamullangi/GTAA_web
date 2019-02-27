@@ -1,0 +1,102 @@
+.login_background {
+    background-image: url(../images/loginpage-GTAA-BG.jpg);
+    height: 100vh;
+}
+.login_background_input{
+    float: left;
+    height: 150px;
+    width: 600px;
+    margin: auto;
+    top: 0px;
+    bottom: 0px;
+    right: 0px;
+    left: 0px;
+    position: absolute;
+}
+.login_background_input img {
+    position: relative;
+    right: 165px;
+}
+    .login_background_input input {
+        position: relative;
+        bottom: 160px;
+        margin: 15px 0px;
+        left: 423px;
+        width: 300px;
+        background: transparent;
+        border: 0;
+        color: #b0b3b4;
+        z-index: 10000000000000;
+        font-size: 15px;
+        outline-color: transparent;
+    }
+input.login_background_input_submitb {
+    left: 542px;
+    margin: 0px;
+    bottom: 170px;
+    opacity: 0;
+    padding: 10px;
+}
+.login_background_signup {
+    text-align: center;
+    bottom: 193px;
+    position: relative;
+    left: 150px;
+    font-size: 11px;
+    color: #b0b3b4;
+}
+.login_background_input_signup input {
+    position: relative;
+    bottom: 0;
+    margin: 0px 0px;
+    left: 0;
+    width: 100%;
+    color: #b0b3b4;
+    z-index: 10000000000000;
+    font-size: 15px;
+    outline-color: transparent;
+    border-bottom: 1px solid;
+}
+.login_background_signup_form {
+    position: relative;
+    bottom: 280px;
+    left: 300px;
+    width: 75%;
+    color: white;
+}
+    .login_background_signup_form .form-group label {
+        width: 40%;
+        float: left;
+        position: relative;
+        top: 7px;
+    }
+    .login_background_signup_form .form-group div {
+        width: 60%;
+        float: left
+    }
+
+    .login_background_signup_form .form-group {
+        float: left;
+        margin: 10px 0px;
+        width: 100%;
+    }
+input.btn.btn-default.login_background_input_signup_submit {
+    border: 1px solid #969191;
+    position: relative;
+    left: 178px;
+    background: darkslategray;
+    color: #fff;
+    padding: 3px;
+}
+#login_background_dashboard_main {
+    height: 100vh;
+    background: #3D3075;
+    color: #cec7c7;
+}
+.wipro_logo img {
+    float: right;
+    width: 70px;
+    top: 5px;
+    position: relative;
+    right: 5px;
+}

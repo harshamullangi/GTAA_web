@@ -1,0 +1,55 @@
+<style>
+span.k-widget.k-datepicker.k-header.datepicker {
+    color: black;
+    background: white;
+    border: 1px solid #fff;
+    width: 100%;
+}
+.k-calendar .k-state-selected ,.k-animation-container{ background: #fff !important;width: 100%; }
+.report_table th {
+	    	width: 400px!important;
+		}
+		table.dataTable.no-footer {
+    border-bottom: 1px solid; 
+}
+</style>
+<link rel="stylesheet" href="https://kendo.cdn.telerik.com/2017.3.913/styles/kendo.common-material.min.css" />
+    <link rel="stylesheet" href="https://kendo.cdn.telerik.com/2017.3.913/styles/kendo.material.min.css" />
+    <link rel="stylesheet" href="https://kendo.cdn.telerik.com/2017.3.913/styles/kendo.material.mobile.min.css" />
+<div class="col-md-12 op_con_rep">
+
+<div class="col-md-12 gta_rep_m_div">
+<div class="gta_rep_div"><label>From Date</label><input name="from_date_rep" placeholder="From Date" class="datepicker"> </div>
+<div class="gta_rep_div"><label>To Date</label><input name="to_date_rep" placeholder="To Date" class="datepicker"></div>
+<div class="gta_rep_div"><label>Report Type</label><select name="type_of_report"><option value="rv">Route Violation</option><option value="gv">Geofence Violation</option><option value="halt">Halt</option><option value="stp">Stoppage</option></select></div>
+<button type="submit" class="btn btn-success report_btn" name="Submit"> Submit</button>
+
+</div>
+<div class='reports_loader'><img src="assests/images/loading1.gif" id="loading_message" /></div>
+<!-- <table class="table table-bordered ac_table report_table">
+	<thead>
+		<tr>
+			<th>Vehicle No</th>
+			<th>Vehicle Name</th>
+			<th>Violation Date</th>
+			<th>Violation Time</th>
+			<th>Route</th>
+			<th>Violation Duration</th>
+		</tr>
+	</thead>
+
+	<tbody>
+		
+	</tbody>
+</table> -->
+</div>
+
+<script>
+$(".datepicker").kendoDatePicker({
+	    value: new Date(),
+	    dateInput: true,
+	   format: "yyyy-MM-dd",
+	});
+	
+$('.report_btn').trigger('click');
+</script>

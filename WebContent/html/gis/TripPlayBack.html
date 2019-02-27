@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Simple Map</title>
+    <meta charset="utf-8">
+  	<meta name="viewport" content="width=device-width, initial-scale=1">
+  	<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+  	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  	<link rel="stylesheet" href="plugins/jQueryUI/jquery-ui.css" />
+  	<link rel="stylesheet" href="plugins/datetimepicker/bootstrap-datetimepicker(4.17.37).min.css" />
+  	<link rel="stylesheet" href="https://kendo.cdn.telerik.com/2017.3.913/styles/kendo.common-material.min.css" />
+    <link rel="stylesheet" href="https://kendo.cdn.telerik.com/2017.3.913/styles/kendo.material.min.css" />
+    <link rel="stylesheet" href="https://kendo.cdn.telerik.com/2017.3.913/styles/kendo.material.mobile.min.css" />
+  	<link href="../../assests/css/trip.css" rel="stylesheet" type="text/css" />
+    
+    <style>
+      
+      
+    </style>
+  </head>
+  <body>
+   <div class="container-fluid">
+	 <div class="row">
+	 <div class="col-sm-9 map_grid">
+			<div id="map_trip">
+					
+			</div>
+		</div>	
+		<div class="col-sm-3 trip_form_grid">
+			 <div class="trip_form_grids">
+			<b><h5 style="text-align: center;margin-top: 0px;margin-bottom: 1px;">Trip Play Back
+			</h5></b>
+			<form class="form-horizontal trip_form" role="search">
+				<div class="form-group">
+					<div class="col-md-4">
+				      <label class="control-label">Vehicle:
+					  </label>	
+					</div>
+					<div class="col-md-8 trip_veh_no">
+						<div class="dropdown">
+							<select class="form-control" id="trip_device">
+								<option value="" disabled selected>Select one</option>
+							</select>
+						</div>
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="col-md-4">
+						<label class="control-label">From Date and Time:
+						</label>
+					</div>
+						<div class="col-md-8">
+							<div class='input-group date' id='fromdatetime'>
+							    <input type='text' class="form-control datepicker" id='fromdatetimeid' placeholder="MM/DD/YYYY HH:MM" type="text" />
+							</div>
+						</div>
+				</div>
+				<div class="form-group" style=" margin-bottom: 6px;">
+				      <div class="col-md-4">
+						<label class="control-label">End Date and Time:
+						</label>
+					</div>
+						<div class="col-md-8">
+							<div class='input-group date' id='todatetime'>
+		
+							    <input type='text' class="form-control datepicker" id='todatetimeid' placeholder="MM/DD/YYYY HH:MM" type="text" />
+							</div>
+					      </div> 
+								     
+								     </div>
+					<div class="form-group submit_grid">        
+										         
+								        <button type="submit" class="btn btn-default" id="submit_trip_play" style="border-left-width: 1px;padding-left: 12px;margin-left: 64px;">Submit</button>
+								        <button type="reset" class="btn btn-default" id="reset_trip" value="Reset">Clear</button>
+										</div>
+			</form>
+			</div>
+			
+			
+		</div>
+		 
+				
+	</div>
+	</div>
+	<script src="js/tripplayback/js/jquery-1.12.4.js"></script>
+	<script src="js/tripplayback/js/jquery.min.js"></script>
+  	<script src="js/tripplayback/js/bootstrap.min.js"></script>
+  	<script src="plugins/jQueryUI/jquery-ui.js"></script>
+  	<script src="js/tripplayback/js/kendo.all.min.js"></script>
+  	<script	src="js/tripplayback/js/moment.min.js" type="text/javascript"></script>
+	<script src="js/tripplayback/js/bootstrap-datetimepicker.min.js"></script>
+
+  			
+    <script>
+    var Main_url='';
+
+	$.get('../../url.txt', function(data) {
+	   // var json_data=jQuery.parseJSON(data);
+	    Main_url=data;
+	    console.info(Main_url);
+
+	    getData();
+	    displayRoutes(); 
+		})
+		$(".datepicker").kendoDateTimePicker({
+	 	    value: new Date(),
+	 	    dateInput: true,
+	 	   format: "dd/MM/yyyy HH:mm:ss",
+	 	});
+  
+    $('#reset_trip').click(function(){
+  	   /*  $(':input','#trip_form')
+  	    .not(':button, :submit, :reset, :hidden')
+  	    .val('')
+  	    .removeAttr('checked')
+  	    .removeAttr('selected');
+  	    $("#trip_form #multiple").empty(); */
+//  	  cleartripMarkers();
+  	  //$(document).first().trigger('click','.adconsle_navtabs_operation li:nth-child(2) > a');
+  	  console.info('cleared');
+  	location.reload();
+  	  //$('.adconsle_navtabs_operation li:nth-child(2)> a').trigger('click');
+  	});  
+ $('#reset_movement').click(function(){
+	    $(':input','#movement_form')
+	    .not(':button, :submit, :reset, :hidden')
+	    .val('')
+	    .removeAttr('checked')
+	    .removeAttr('selected');
+	    $("#movement_form #multiple").empty();
+	    clearMovementMarkers();
+	});  
+		function getData(){
+			 $.ajax({
+			     type: 'get',
+			     url: Main_url+'gtaa_eta/display_vehicle_details',
+			     contentType:"application/json",
+			     dataType:'json',
+			     success: function (response) {
+			   	 	$.each(response.Message,function(key,value){
+		        				$('#trip_device').append("<option>"+value.vehicle_name+"</option>");
+						});  
+			 		}
+			});
+			 
+		}
+		var myVar;
+		
+		 $('#submit_trip_play').on('click',function(e){
+	    	 e.preventDefault();
+			  var a=$('#fromdatetimeid').val();
+			  console.log(a);
+			  var frm_res = a.split(" ");
+			  
+			  var frm_res0 = frm_res[0]
+			  var frm_res1 = frm_res[1];
+
+			     
+				//to date and time
+			     
+			      var b=$('#todatetimeid').val();
+				  var to_res = b.split(" ");
+				  var to_res0 = to_res[0]
+				  var to_res1 = to_res[1];
+				  				  
+	     
+			     if( $('#trip_device').val() == null || $('#fromdatetimeid').val() == "" || $('#todatetimeid').val() == "") {
+					        alert('Please Select Vehicle');
+					        //console.log("Mandatory Parameters");
+						  }else{
+							
+							  $.ajax({
+							         type: 'post',
+							        url: Main_url+'gtaa_eta/operation_trip_play_back_details',
+							        contentType:"application/json",
+							        dataType:'json',
+							        data: JSON.stringify({ 
+							          'vehicle_no':$('#trip_device').val(),
+							          'from_date':frm_res0,
+							          'to_date':to_res0,
+							          'from_time':frm_res1,
+							          'to_time':to_res1
+							             }),
+							        success: function (response) {
+							        	//console.info(response.Message.latlong.length);
+							        	if(response.Message.latlong.length==0){
+							        		  alert("No Data Found");
+							        	}else{ 
+							        	tripData = response.Message.latlong;
+							        	tripMap_array(tripData);
+							        	} 
+							        },
+							        error: function (response) {
+							          alert("Error");
+							        } 
+							        
+							      }); 
+				              } 
+				     
+			     
+       		 });
+		 
+      var map;
+      function initMap() {
+    	  map = new google.maps.Map(document.getElementById('map_trip'), {
+    		  center :{'lat':43.6784801,'lng':-79.6118817},
+				zoom : 16,
+				mapTypeId : google.maps.MapTypeId.ROADMAP,
+				 zoomControl: true,
+				disableDefaultUI: true,
+		        zoomControlOptions: {
+		        position: google.maps.ControlPosition.RIGHT_TOP},
+		        scaleControl: true,
+            });
+    	  
+    	 
+    	  
+    	  
+      }
+      
+      function displayRoutes(){
+			$.ajax({
+				method : 'GET',
+				url : Main_url + 'gtaa_eta/dashboard_route_details',
+				success : function(response) { 
+					console.info(response);
+					
+					$.each(response.Message,function(key,val){
+						var bookorders=[];
+						//console.info(val.latlong);
+						$.each(val.latlong,function(key,value){
+							
+							var lat= value.split(',')[0];
+							var longa= value.split(',')[1];
+							
+							var temp=new Object();
+							temp['lat']=parseFloat(lat);
+							temp['lng']=parseFloat(longa);
+							bookorders.push(temp);
+						});
+						if(val.route_name == 'Route1'){
+							var color = '#ff0000';
+						}else if(val.route_name == 'Route2'){
+							var color = '#8BC34A';
+						}else if(val.route_name == 'Route3'){
+							var color = '#111';
+						}
+						var bermudaTriangle = new google.maps.Polygon({
+						    paths: bookorders,
+						    strokeColor: color,
+						    strokeOpacity: 0.8,
+						    strokeWeight: 2,
+						    fillColor: color,
+						    fillOpacity: 0.35,
+						   label:({
+							   text:'ssss',
+						   })
+						  });
+						  bermudaTriangle.setMap(map);
+						  infoWindow = new google.maps.InfoWindow;
+						  if(val.route_name == 'Route1'){
+							  bermudaTriangle.addListener('click', showArraysRoute1);
+							}else if(val.route_name == 'Route2'){
+								 bermudaTriangle.addListener('click', showArraysRoute2);
+							}else if(val.route_name == 'Route3'){
+								 bermudaTriangle.addListener('click', showArraysRoute3);
+							}
+						 
+						  
+					});
+				},
+				error : function() { /* alert('Failed!'); */
+				}
+			
+			});
+		}
+      
+  	function showArraysRoute1(event){
+		
+		infoWindow.setContent('Route1');
+		infoWindow.setPosition(event.latLng);
+		infoWindow.open(map);
+	}
+	
+	function showArraysRoute2(event){
+		
+		infoWindow.setContent('Route2');
+		infoWindow.setPosition(event.latLng);
+		infoWindow.open(map);
+	}
+	
+	function showArraysRoute3(event){
+		
+		infoWindow.setContent('Route3');
+		infoWindow.setPosition(event.latLng);
+		infoWindow.open(map);
+	}
+      
+      function tripMap_array(tripData){
+    	  var latitude1,longitude1,trip_data_split;
+	    	 for(i = 0; i < tripData.length; i++){
+	    		 console.info(data_obj);
+	    		 data_obj={};
+	    		  trip_data_split=tripData[i].split(',');
+					latitude1=trip_data_split[0];
+					longitude1=trip_data_split[1];
+					data_obj['lat']=latitude1;
+					data_obj['lng']=longitude1;
+					marker_trip.push(data_obj);
+					console.info(data_obj);
+	    	 }
+	    	 console.info(marker_trip);
+	    	 tripMap(marker_trip)
+	    	 
+      }
+      	var marker_trip=[];
+      	 var data_obj = {};
+	     var i, route, marker1;
+	     
+	     function tripMap(marker_trip){
+	    	 var i;
+	
+				route = new google.maps.Polyline({
+					path: [],
+					geodesic : true,
+					strokeColor: '#000000',
+					strokeOpacity: 1.0,
+					strokeWeight: 2,
+					editable: false,
+					map:map
+				});
+				
+				marker1=new google.maps.Marker({map:map,icon:"img/Asset6.png"});	
+				
+				for (i = 0; i < marker_trip.length; i++) {
+						 
+						setTimeout(function(coords)
+								{
+							//console.info(coords);
+						  var latlng = new google.maps.LatLng(coords.lat,coords.lng);
+							
+							route.getPath().push(latlng);
+									moveMarker(map, marker1, latlng);
+								}, 500 * i, marker_trip[i]);   
+				
+				}
+				
+				
+	    	 
+	   }
+	     
+	    // google.maps.event.addDomListener(window, 'load', initialize);
+	     function moveMarker(map, marker1, latlng) {
+	    	// marker_trip.push(marker1);
+				marker1.setPosition(latlng);
+				map.panTo(latlng);
+				//map.setCenter(latlng);
+				
+			}
+			
+
+	     cleartripMarkers=function(){
+		 		
+	    	 console.info("Inside Clear");
+		 		/* for (var i = 0; i < marker_trip.length; i++) {
+		 			marker_trip[i].setMap(null);
+		 			console.info("Hello");
+		 	        } */
+		 	   /*     marker_trip[i].setMap(null);
+		 		 route.setMap(null);
+		 		route=[];
+		 		 clearTimeout(myVar);
+		 		 var center= new google.maps.LatLng(43.6784801,-79.6118817);
+		    	 map.setCenter(center);
+		    	 map.setZoom(16);  */
+		    	 /* route.setMap(null);
+			 		route=[];
+	    	 initMap(); */
+	    	 $('.adconsle_navtabs_operation li:nth-child(2)> a').trigger('click');
+		 	}
+	    
+    </script>
+   <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB3bCV7GD2iGw-juQ-5rS71JMm6HcC4fUM&callback=initMap"></script>
+  </body>
+</html>

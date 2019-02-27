@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GTAA-Transit Bus ETA System</title>
+<link rel="stylesheet" href="assests/css/jquery-ui.css">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.3/styles/github.min.css" rel="stylesheet" >
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="assests/css/bootstrap/bootstrap.min.css">
+<link rel="stylesheet" href="assests/css/font-awesome.min.css">
+
+<link href="bootstrap-table/jquery-dataTables-min.css" rel="stylesheet"
+	type="text/css" />
+<link href="bootstrap-table/buttons-dataTables-min.css" rel="stylesheet"
+	type="text/css" />
+<link rel="stylesheet"
+	href="assests/css/bootstrap-datetimepicker.min.css" />
+<link href="assests/css/bootstrap/dataTables.bootstrap4.min.css"
+	rel="stylesheet" type="text/css" />
+<link rel="stylesheet" href="assests/css/kendo.common-material.min.css" />
+<link href="assests/css/base.css" rel="stylesheet" type="text/css" />
+<link href="assests/css/base_pc.css" rel="stylesheet" type="text/css" />
+
+<link rel="stylesheet" href="assests/css/config.css">
+
+</head>
+<body ng-app="myApp" onload="user_role()" onmouseover="ResetTimers()">
+
+	<div>
+		<!-- Navbar Starts -->
+		<nav class="navbar navbar-default">
+			<!-- <div class="container-fluid"> -->
+			<!-- <div class=""> -->
+			<a class="navbar-brand" href="#"> <span><img
+					src="assests/images/logo.PNG" /></span> <span class="navbar-header-title">GTAA-Transit
+					Bus ETA System</span>
+			</a>
+			<!-- </div> -->
+			<button class="navbar-toggler nav_toggle_btn_coll" type="button"
+				data-toggle="collapse" data-target="#navbarSupportedContent"
+				aria-controls="navbarSupportedContent" aria-expanded="false"
+				aria-label="Toggle navigation">
+				<span class="fa fa-sort-down"></span>
+
+			</button>
+			<div class="navbar-collapse collapse" id="navbarSupportedContent">
+				<!-- <div class="pull-right">
+					<i class="fa fa-sign-out gtaa-fa-sign-out" aria-hidden="true"></i>
+				</div> -->
+				<ul class="nav navbar-nav navbar-right gtaa_navbar_right">
+					<li><a href="#!dashboard" title="Dashboard"><i
+							class="fa fa-home fa-home-icon" aria-hidden="true"></i></a></li>
+							
+					<li class="notify_a"><a title="Notifications"><i class="fa fa-bell fa-noti-icon" aria-hidden="true"><sub class="noti_bell_val"></sub></i></a></li>
+						
+					 
+					<li><a href="#!admin" id="navbarDropdown" role="button"
+						data-toggle="dropdown">Admin Console</a></li>
+					<li><a href="#!operator">Operations</a></li>
+					<li><a href="#!passenger_console">Passenger Console</a></li>
+					
+					<li><i class="fa fa-sign-out gtaa-fa-sign-out"
+						aria-hidden="true"></i></li>
+						
+					<!-- <li><i class="fa fa-eye-slash out-eye" aria-hidden="true" id="out-eye" style="display:none;"></i></li> -->
+				</ul>
+			</div>
+			<!-- </div> -->
+		</nav>
+		<!-- Navbar Ends -->
+
+		<div ng-view></div>
+		
+		<div class="notification_details" style="display:none;">
+			
+			<ul>
+				<!-- <li class="temp_routes" onclick="notification_m('temp-1')">New Temp Route Observed :- <p>4</p></li>
+				<li class="temp_routes" onclick="notification_m('temp-2')">New Temp Route Observed :- <p>6</p></li>
+				<li class="temp_routes" onclick="notification_m('temp-3')">New Temp Route Observed :- <p>9</p></li>
+				<li class="temp_routes" onclick="notification_m('temp-4')">New Temp Route Observed :- <p>2</p></li> -->
+			</ul>
+			
+		</div> 
+	</div>
+	
+
+	
+	<script src="assests/js/jquery.min.js"></script>
+	<!-- <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script> -->
+	<script src="assests/js/jquery-ui.min.js" type="text/javascript"></script>
+	<script src="assests/js/angular.min.js"></script>
+	<script src="assests/js/angular-route.js"></script>
+	<script src="assests/js/bootstrap/bootstrap.min.js"></script>
+	<script src="assests/js/highcharts/highcharts.js"></script>
+	<script src="assests/js/highcharts/series-label.js"></script>
+	<script src="assests/js/highcharts/exporting.js"></script>
+	<script src="assests/js/bootbox/bootbox.js"></script>
+	<script src="assests/js/app.js"></script>
+	<script src="assests/js/custom.js"></script>
+	<!-- <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script> -->
+	<!-- <script src="assests/js/config.js"></script> -->
+	<script src="assests/js/controller/MainController.js"></script>
+	<script src="assests/js/controller/DashboardController.js"></script>
+	<script src="assests/js/controller/AdminController.js"></script>
+	<script src="assests/js/controller/OperationController.js"></script>
+	<script src="assests/js/controller/passengerConsole.js"></script>
+	<script src="assests/js/bootstrap-table.min.js"></script>
+	<script src="assests/js/bootstrap-table-export.js"></script>
+	<script src="bootstrap-table/datatables/jquery.dataTables.min.js"></script>
+	<script src="assests/js/bootstrap/dataTables.bootstrap4.min.js"></script>
+	<script src="bootstrap-table/datatables/dataTables.bootstrap.min.js"
+		type="text/javascript"></script>
+	<script src="bootstrap-table/dataTables.buttons.min.js"></script>
+	<script src="bootstrap-table/buttons.print.min.js"></script>
+	<script type="text/javascript"
+		src="bootstrap-table/bootstrap-table-contextmenu.min.js"></script>
+
+	<script src="assests/js/dataTables.buttons.min.js"></script>
+	<script src="assests/js/jszip.min.js"></script>
+	<script src="assests/js/datatables_pdf.js"></script>
+	<script src="assests/js/vfs_fonts.js"></script>
+
+	<script src="assests/js/buttons.html5.min.js"></script>
+	<script src="assests/js/buttons.print.min.js"></script>
+	<script src="assests/js/kendo.all.min.js"></script>
+	<script src="assests/js/moment.min.js" type="text/javascript"></script>
+	<script src="assests/js/bootstrap-datetimepicker.min.js"></script>
+	
+	
+
+	<script>
+	function user_role(){
+		if(localStorage.getItem('gta_Role')== 'operator'){
+			$('.gtaa_navbar_right li:nth-child(2), #out-eye').css('display','none');
+			
+		}
+		warningTimer = setTimeout("IdleWarning()", timoutWarning);
+	    timeoutTimer = setTimeout("IdleTimeout()", timoutNow);
+	    
+	    //get_config();
+	}
+	var url;
+
+	$.get('url.txt', function(data) {
+		url = data;
+		localStorage.setItem('gtaa_main_url',data);
+	}, 'text');
+	
+		$(document).on('click','.gtaa-fa-sign-out',function(){
+			var loggedin_user=localStorage.getItem('login_user');
+			
+			$.ajax({
+				url : url + 'gtaa_eta/update_logout_time',
+				method : 'POST',
+				dataType : 'JSON',
+				async : true,
+				headers : {
+					'Accept' : 'application/json',
+					'Content-Type' : 'application/json'
+				},
+				data : JSON.stringify({
+					"user_name" : loggedin_user,
+					//"password" : password,
+				}),
+				success : function(response) {
+					console.info(response);
+					//bootbox.alert("This is the default alert!");
+					if(response.Message == '1 Record updated Successfully'){
+						localStorage.setItem('login_user','');
+						window.location.href='login.html';
+					}else if(response.Message == 'Error in updating record'){
+						localStorage.setItem('login_user','');
+						window.location.href='login.html';
+					}
+				},
+				error : function(response) {
+					window.location.href='login.html';
+				}
+			});
+		});
+		function logout(){
+			var loggedin_user=localStorage.getItem('login_user');
+			
+			$.ajax({
+				url : url + 'gtaa_eta/update_logout_time',
+				method : 'POST',
+				dataType : 'JSON',
+				async : true,
+				headers : {
+					'Accept' : 'application/json',
+					'Content-Type' : 'application/json'
+				},
+				data : JSON.stringify({
+					"user_name" : loggedin_user,
+					//"password" : password,
+				}),
+				success : function(response) {
+					console.info(response);
+					//bootbox.alert("This is the default alert!");
+					if(response.Message == '1 Record updated Successfully'){
+						localStorage.setItem('login_user','');
+						//window.location.href='login.html';
+					}else{
+						localStorage.setItem('login_user','');
+					}
+				},
+				error : function(response) {
+
+				}
+			});
+		}
+		
+		$(document).ready(function(){
+			var length=$('.dash_trip_status').length;
+			if(length > 3){
+				$('.gtaa_dashboard_div_2_1_1_trip_status').css('overflow-y','scroll');
+			}
+		})
+		
+		$('document').on('click','.gta_close_fun',function(){
+			$('.bootbox').remove();
+		});
+		
+		// Set timeout variables.
+		var timoutWarning = 540000; // Display warning in 9 Mins.
+		var timoutNow = 600000; // Timeout in 10 mins.
+		var logoutUrl = 'login.html'; // URL to logout page.
+
+		var warningTimer;
+		var timeoutTimer;
+
+		// Start timers.
+		  function StartTimers() {
+		    warningTimer = setTimeout("IdleWarning()", timoutWarning);
+		    timeoutTimer = setTimeout("IdleTimeout()", timoutNow);
+		} 
+
+
+		// Reset timers.
+		function ResetTimers() {
+		    clearTimeout(warningTimer);
+		    clearTimeout(timeoutTimer);
+		    StartTimers();
+		    $("#timeout").dialog('close');
+		}
+
+		// Show idle timeout warning dialog.
+		function IdleWarning() {
+		    $("#timeout").dialog({
+		        modal: true
+		    });
+		}
+
+		// Logout the user.
+		function IdleTimeout() {
+		    window.location = logoutUrl;
+		}
+		//setInterval(function(){StartTimers()},10000);
+		
+		$(document).on('click','.fa-noti-icon',function(){
+			$('.notification_details').toggle();
+		});
+		
+		function close_function(){
+			$('body').removeClass('.modal-open');
+			$('.bootbox').css('display','none');
+			$('.modal-backdrop').css('display','none');
+		};
+		
+	</script>
+</body>
+</html>

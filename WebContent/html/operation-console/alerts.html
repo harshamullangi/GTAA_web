@@ -1,0 +1,105 @@
+<style>
+.modal-body {
+    float: left;
+}
+.alert_val {
+    cursor: pointer;
+}
+</style>
+<div class="col-md-12 padding-0">
+
+	<div class="col-md-12 padding-0 main_div_alert">
+		<div class="col-md-2 op_alerts_total_summ">
+			<div class="dash_fleet_count">
+				<span class="dash_fleet_count_span_1 alerts_overall_count">0 </span><br> <span
+					class="dash_fleet_count_span_2">Total Alerts</span>
+			</div>
+		</div>
+
+
+		<div class="col-md-10 op_alert_summ_md">
+			<div class="col-md-12 op_alert_summ_div">
+				<div class="col-md-3 op_alert_summ_col">
+					<div>
+						<img src="assests/images/Route1.png">
+						<div class="op_alert_summ">
+							<span ng-model="route_violation" class="alerts_route_violation">0</span>
+							<p>Route Violation</p>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-3 op_alert_summ_col">
+					<div>
+						<img src="assests/images/Geofence.png">
+						<div class="op_alert_summ">
+							<span class="alerts_geofence_violation">0</span>
+							<p>Geofence Violation</p>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-3 op_alert_summ_col">
+					<div>
+						<img src="assests/images/Stoppage.png">
+						<div class="op_alert_summ">
+							<span class="alerts_stoppage">0</span>
+							<p>Stoppage Alert</p>
+						</div>
+					</div>
+				</div>
+				<!-- <div class="col-md-35 op_alert_summ_col">
+					<div>
+						<img src="assests/images/Device.png">
+						<div class="op_alert_summ">
+							<span class="alerts_device_alert">0</span>
+							<p>Device Alert</p>
+						</div>
+					</div>
+				</div> -->
+				<div class="col-md-3 op_alert_summ_col">
+					<div>
+						<img src="assests/images/Halt.png">
+						<div class="op_alert_summ">
+							<span class="alerts_halt">0</span>
+							<p>Halt Alert</p>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="col-md-12 graph_container">
+			<div class="col-md-6">
+				<div id="container"
+					style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+			</div>
+			<div class="col-md-6">
+				
+				<div class="dash_alerts_summ gtaa_alert_header_alerts">
+				<h5 class="alert_header gtaa_alert_header">Alerts
+				<span class="pull-right"><i class="fa fa-dot-circle-o alert_high_i" aria-hidden="true" title="High"></i>
+				<i class="fa fa-dot-circle-o alert_med_i" aria-hidden="true" title="Medium"></i>
+				<i class="fa fa-dot-circle-o alert_low_i" aria-hidden="true" title="Low"></i>
+				
+				</h5>
+				
+				<div class="hash_alert_div">
+				
+				<div class="alert_val">
+				<span class="alert_span col-md-12"><p class="pull-left">No Alert Found </p>
+				<p class="pull-right"></p></span>
+				<p class="p-content col-md-12"> &nbsp; </p> 
+				</div>
+				
+				</div>
+
+			</div>
+				
+			</div>
+		</div>
+
+	</div>
+
+</div>
+<script>
+	
+</script>

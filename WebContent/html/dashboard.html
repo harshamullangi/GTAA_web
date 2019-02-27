@@ -1,0 +1,134 @@
+<style>
+#container_charts {
+	width: 100%;
+	height: 180px;
+}
+.dash_alerts_summ .bshsah{
+    overflow-y: scroll;
+    height: 290px;
+}
+</style>
+<div id="login_background_dashboard_main">
+	<!-- Division 1 -->
+	<div class="col-md-12 gtaa_dashboard_div">
+		<div class="col-md-6 pull-left gtaa_dash_div_title">Dashboard</div>
+		<div class="col-md-6 pull-right gtaa_dash_div_time">
+			<span>{{AssignedDate.now() | date:'yyyy-MM-dd HH:mm:ss'}}</span>
+		</div>
+	</div>
+
+	<!-- Division 2 -->
+	<div class="col-md-12 gtaa_dashboard_div gtaa_dashboard_div_2">
+		<div class="col-md-2 col-xs-4 pull-left gtaa_dashboard_div_2_1">
+			<div class="float-left-100 gtaa_dashboard_div_2_1_1">
+				<h5>Fleets</h5>
+				<div class="dash_fleet_count">
+					<span class="dash_fleet_count_span_1"> </span><br> <span
+						class="dash_fleet_count_span_2">Assigned Vehicles</span>
+				</div>
+			</div>
+
+		</div>
+
+		<div class="col-md-4 col-xs-8 pull-left gtaa_dashboard_div_2_1">
+		<i class="fa fa-arrow-left gtaa_fa_arr_left"></i>
+		<i class="fa fa-arrow-right gtaa_fa_arr_right"></i>
+			<div class="gtaa_dashboard_div_2_1_1 gtaa_dashboard_div_2_1_1_trip_status">
+				<h5>Trips Status</h5>
+				
+				<div class="dash_trip_status total_values_dmain_count">
+					<span class="total_bus_count">0</span><br> <span>Total Trips</span>
+				</div>
+				
+			</div>
+			
+		</div>
+
+		<div class="col-md-6 col-xs-12 pull-left gtaa_dashboard_div_2_1_2">
+
+			<div class="col-xs-12 float-left-100 gtaa_dashboard_div_2_1_1">
+				<div class="col-md-3 col-xs-4">
+					<p>Overall Trips</p>
+					<div class="dash_graph_1">
+					</div>
+
+
+				</div>
+
+				<div class="col-md-9 col-xs-8">
+
+					<div id="container_charts"></div>
+				</div>
+
+			</div>
+		</div>
+	</div>
+
+
+	<!--New Row-->
+	<div class="col-md-12 dash-map-padding">
+		<div class="col-md-7 col-xs-12">
+
+			<div class="panel dash-panel-head panel-map-dashboard">
+				<div class="panel-heading">
+					Terminal Map 
+					<div class="float-left-op"><img src="assests/images/BlueBus.png" />Geofence Violation</div>
+					<div class="float-left-op"><img src="assests/images/buses24.png" />Halt/Stoppage</div>
+					<div class="float-left-op"><img src="assests/images/Asset_69.png" />Online</div>
+					
+					
+					<!-- <img src="assests/images/Vehicle.png" /> 
+					<img src="assests/images/Route.png" /> -->
+				</div>
+				<div class="panel-body map_panel_body">
+					<iframe src="html/gis/BaseMap_dash.html"></iframe>
+					
+				</div>
+			</div>
+
+		</div>
+
+		<div class="col-md-5 col-xs-12">
+			<!-- Alert Div-->
+			<div class="dash_alerts_summ">
+				<h5 class="alert_header">Alerts</h5>
+				<div class="bshsah">
+				</div>
+			</div>
+
+			<!-- Alert Div-->
+
+		</div>
+
+	</div>
+
+</div>
+
+<div class="notification_details" style="display:none;">
+			
+			<ul>
+				<li class="temp_routes" ng-click="notification_m('temp-1')">New Temp Route Observed :- <p>4</p></li>
+				<li class="temp_routes" ng-click="notification_m('temp-2')">New Temp Route Observed :- <p>6</p></li>
+				<li class="temp_routes" ng-click="notification_m('temp-3')">New Temp Route Observed :- <p>9</p></li>
+				<li class="temp_routes" ng-click="notification_m('temp-4')">New Temp Route Observed :- <p>2</p></li>
+			</ul>
+			
+		</div>
+
+<script>
+
+	//$(document).ready(function() {
+	
+		$(document).on('click','.gtaa_fa_arr_right',function() {
+			var leftPos = $('.gtaa_dashboard_div_2_1_1_trip_status').scrollLeft();
+			$('.gtaa_dashboard_div_2_1_1_trip_status').animate({scrollLeft: leftPos +100},'fast');
+		});
+
+		$(document).on('click','.gtaa_fa_arr_left',function() {
+			var leftPos = $('.gtaa_dashboard_div_2_1_1_trip_status').scrollLeft();
+			$('.gtaa_dashboard_div_2_1_1_trip_status').animate({scrollLeft: leftPos -100},'fast');
+		});
+	//});
+	
+	
+</script>

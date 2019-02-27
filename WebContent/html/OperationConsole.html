@@ -1,0 +1,37 @@
+<div class="login_background_dashboard_main">
+
+	<div class="col-md-12 gtaa_dashboard_div">
+		<div class="col-md-6 pull-left gtaa_dash_div_title">Operation
+			Console</div>
+		<div class="col-md-6 pull-right gtaa_dash_div_time">
+			<span>{{AssignedDate.now() | date:'yyyy-MM-dd HH:mm:ss'}}</span>
+		</div>
+	</div>
+
+	<div class="col-md-12 gtaa_dashboard_main">
+		<div class="col-md-12 gtaa_dashboard_m_d">
+
+			<ul class="nav nav-tabs adconsle_navtabs adconsle_navtabs_operation">
+				<li class="active"><a data-toggle="tab"
+					data-target="#mapandeta" ng-click="mapandeta()" id="mapandeta">Map
+						& ETA</a></li>
+				<li><a data-toggle="tab"
+					data-target="#op_transit" ng-click="op_transit()" id="op_transit">Transit Bus Monitoring</a></li>
+				<li><a data-toggle="tab"
+					data-target="#op_alerts" ng-click="op_alerts()" id="op_alerts">Alerts</a></li>
+				<li><a data-toggle="tab"
+					data-target="#op_reports" ng-click="op_reports()" id="op_reports">Report</a></li>
+			</ul>
+
+		</div>
+
+		<div class="tab-content operation_map"></div>
+
+	</div>
+</div>
+
+<script>
+$(document).ready(function(){
+	$('.adconsle_navtabs_operation li:first-child a').trigger('click');
+})
+</script>
